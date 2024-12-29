@@ -78,7 +78,7 @@ const LogIn = () => {
             )}
           />
           <Button type="submit" disabled={false}>
-            회원가입
+            로그인
           </Button>
         </form>
       </Form>

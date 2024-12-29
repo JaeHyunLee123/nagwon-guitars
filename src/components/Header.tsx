@@ -1,11 +1,9 @@
-"use client";
-
-import { useState } from "react";
+import getIronSessionData from "@/lib/session";
 import { Button } from "./ui/Button";
 import Link from "next/link";
 
-const Header = () => {
-  const [isLoggedIn] = useState(false);
+const Header = async () => {
+  const session = await getIronSessionData();
 
   return (
     <header className="flex justify-between py-4 px-2 border-b">
@@ -13,7 +11,7 @@ const Header = () => {
         <span className="font-bold text-2xl">낙원기타</span>
       </Link>
 
-      {isLoggedIn ? (
+      {session.isLoggedIn ? (
         <Button>마이 페이지</Button>
       ) : (
         <div className="flex space-x-2">

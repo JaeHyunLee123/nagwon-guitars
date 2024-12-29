@@ -21,9 +21,7 @@ const signupFormSchema = z
     password: z.string().min(10, "비밀번호는 최소 10글자 이상이여야 합니다."),
     passwordConfirmation: z.string(),
     name: z.string().min(2, "이름은 최소 2글자 이상이여야 합니다."),
-    phoneNumber: z
-      .string()
-      .regex(/^[\d-]+$/, "형식에 맞지 않는 전화번호입니다."),
+    phoneNumber: z.string().regex(/^[\d]+$/, "숫자만 입력해주세요"),
   })
   .refine((data) => data.password === data.passwordConfirmation, {
     message: "비밀번호가 서로 같지 않습니다.",

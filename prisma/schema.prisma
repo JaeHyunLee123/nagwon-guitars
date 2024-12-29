@@ -13,3 +13,106 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
+enum Role {
+  Buyer
+  Seller
+  Admin
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email           String @unique
+  password        String
+  name            String
+  role            Role
+  userPhoneNumber String
+
+  isApproved Boolean //sellor needs to be approved by admin
+  store      Store? //only for seller
+}
+
+model Store {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  storePhoneNumber String
+  webSite          String?
+  address          String
+
+  owner  User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  instruments Instrument[]
+}
+
+enum InstrumentType {
+  Guitar
+  Bass
+}
+
+model Instrument {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  imageUrls              String[]
+  price                  Int
+  stock                  Int      @default(1)
+  isUsed                 Boolean  @default(false)
+  specificationImageUrls String[]
+  specificationTexts     String[]
+
+  type   InstrumentType //discriminator
+  guitar Guitar? // model specific 1-1 relation
+  bass   Bass? // model specific 1-1 relation
+
+  store   Store  @relation(fields: [storeId], references: [id])
+  storeId String
+}
+
+enum GuitarFeature {
+  Acoustic
+  Electric
+  Classic
+
+  SixString
+  SevenStringOrMore
+}
+
+//extends Instrument
+model Guitar {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  instrument   Instrument @relation(fields: [instrumentId], references: [id])
+  instrumentId String     @unique
+
+  features GuitarFeature[]
+}
+
+enum BassFeature {
+  Acoustic
+  Electric
+
+  FourString
+  FiveString
+  SixStringOrMore
+}
+
+//extends Instrument
+model Bass {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  instrument   Instrument @relation(fields: [instrumentId], references: [id])
+  instrumentId String     @unique
+
+  features BassFeature[]
+}

@@ -1,12 +1,8 @@
-import { db } from "@/lib/db";
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import { Prisma } from "@prisma/client";
-
-interface ResponseData {
-  message: string;
-}
+import { db } from "@/lib/db";
 
 const BodyValidator = z.object({
   email: z.string().email(),
@@ -15,14 +11,11 @@ const BodyValidator = z.object({
   phoneNumber: z.string().regex(/^[\d]+$/),
 });
 
-const post = async (
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-) => {
+export async function POST(req: NextRequest) {
   try {
-    const { email, password, name, phoneNumber } = BodyValidator.parse(
-      req.body
-    );
+    const body = await req.json();
+
+    const { email, password, name, phoneNumber } = BodyValidator.parse(body);
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -37,27 +30,24 @@ const post = async (
       },
     });
 
-    res.status(200);
+    return Response.json({ message: "ok" }, { status: 200 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(422).json({ message: "invalid form" });
+      return Response.json({ message: "invalid form" }, { status: 422 });
     }
 
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       // The .code property can be accessed in a type-safe manner
       if (error.code === "P2002") {
-        res.status(409).json({ message: "this email is already in use" });
+        return Response.json(
+          { message: "this email is already in use" },
+          { status: 409 }
+        );
       }
     }
-
-    res.status(500).json({ message: "unexpected server error" });
+    return Response.json(
+      { message: "unexpected server error" },
+      { status: 500 }
+    );
   }
-};
-
-const handler = (req: NextApiRequest, res: NextApiResponse<ResponseData>) => {
-  if (req.method === "post") {
-    post(req, res);
-  }
-};
-
-export default handler;
+}

@@ -53,7 +53,7 @@ const SignUp = () => {
       name,
       phoneNumber,
     }: z.infer<typeof signupFormSchema>) => {
-      return axios.post("/sign-up/buyer", {
+      return axios.post("/api/sign-up/buyer", {
         email,
         password,
         name,

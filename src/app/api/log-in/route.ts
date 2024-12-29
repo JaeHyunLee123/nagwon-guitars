@@ -4,15 +4,18 @@ import { z } from "zod";
 import bcrypt from "bcrypt";
 import getIronSessionData from "@/lib/session";
 
-const BodyValidator = z.object({
+const ParamsValidator = z.object({
   email: z.string().email(),
   password: z.string().min(10),
 });
 
 export async function GET(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { email, password } = BodyValidator.parse(body);
+    const params = req.nextUrl.searchParams;
+    const { email, password } = ParamsValidator.parse({
+      email: params.get("email"),
+      password: params.get("password"),
+    });
 
     const user = await db.user.findUnique({
       where: {
@@ -53,7 +56,10 @@ export async function GET(req: NextRequest) {
 
     return Response.json({ message: "ok" }, { status: 200 });
   } catch (error) {
-    console.error(error);
+    if (error instanceof z.ZodError) {
+      return Response.json({ message: "invalid form" }, { status: 422 });
+    }
+
     return Response.json(
       { message: "unexpected server error" },
       { status: 500 }

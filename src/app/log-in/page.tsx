@@ -10,9 +10,13 @@ import {
   FormMessage,
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
+import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import axios, { AxiosError } from "axios";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -27,8 +31,63 @@ const LogIn = () => {
     mode: "onChange",
   });
 
+  const route = useRouter();
+  const { toast } = useToast();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: ({ email, password }: z.infer<typeof logInFormSchema>) => {
+      return axios.get("/api/log-in", { params: { email, password } });
+    },
+    onSuccess: () => {
+      route.push("/");
+    },
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        //invalid form
+        if (error.response?.status === 422) {
+          toast({
+            title: "유효하지 않은 입력입니다.",
+            description: "양식에 맞게 입력해주시길 바랍니다.",
+            variant: "destructive",
+          });
+          //이미 사용중인 이메일
+        } else if (error.response?.status === 409) {
+          toast({
+            title: "등록되지 않은 이메일입니다.",
+            description: "등록한 이메일을 제출해주세요.",
+            variant: "destructive",
+          });
+        } else if (error.response?.status === 500) {
+          toast({
+            title: "예상치 못한 서버 에러입니다.",
+            description: "잠시 후 다시 요청해주세요.",
+            variant: "destructive",
+          });
+        } else if (error.response?.status === 403) {
+          toast({
+            title: "비밀번호가 틀렸습니다.",
+            description: "다시 입력해주세요.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "알 수 없는 에러가 발생했습니다.",
+            description: "잠시 후 다시 요청해주세요.",
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "알 수 없는 에러가 발생했습니다.",
+          description: "잠시 후 다시 요청해주세요.",
+          variant: "destructive",
+        });
+      }
+    },
+  });
+
   const onSubmit = (form: z.infer<typeof logInFormSchema>) => {
-    console.log(form);
+    mutate(form);
   };
 
   return (
@@ -77,7 +136,7 @@ const LogIn = () => {
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={false}>
+          <Button type="submit" disabled={isPending}>
             로그인
           </Button>
         </form>

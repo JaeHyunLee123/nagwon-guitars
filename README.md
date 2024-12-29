@@ -1,3 +1,10 @@
+# 설명
+
+낙원 상가 안에는 많은 악기점들이 있다.
+그러나 낙원 상가 안에 있는 악기 정보들을 통합적으로 제공하는 플랫폼이 없어 정보 검색에 어려움이 있다.
+위와 같은 불편함을 해소하기 위해 낙원 상가 악기 정보 플랫폼을 만든다.
+우선적으로 기타와 베이스 정보만 만들고 이후 확장한다.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

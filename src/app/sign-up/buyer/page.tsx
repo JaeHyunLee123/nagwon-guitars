@@ -32,7 +32,7 @@ const signupFormSchema = z
     path: ["passwordConfirmation"], // Error will be associated with passwordConfirmation
   });
 
-const SignUp = () => {
+const BuyerSignUp = () => {
   const signUpForm = useForm<z.infer<typeof signupFormSchema>>({
     resolver: zodResolver(signupFormSchema),
     mode: "onChange",
@@ -107,18 +107,16 @@ const SignUp = () => {
   });
 
   return (
-    <main>
-      <div className="w-full flex flex-col space-y-2 items-center">
-        <span className="text-xl font-bold">회원가입</span>
-        <span className="text-sm">
-          판매자 회원 회원가입은 아래 버튼을 클릭해주세요.
-        </span>
-        <Link href="/sign-up/seller">
-          <Button variant={"outline"} className="text-xs">
-            판매자 회원가입
-          </Button>
-        </Link>
-      </div>
+    <main className="flex flex-col space-y-4 items-center">
+      <span className="text-xl font-bold">회원가입</span>
+      <span className="text-sm">
+        판매자 회원 회원가입은 아래 버튼을 클릭해주세요.
+      </span>
+      <Link href="/sign-up/seller">
+        <Button variant={"outline"} className="text-xs">
+          판매자 회원가입
+        </Button>
+      </Link>
 
       <Form {...signUpForm}>
         <form
@@ -204,4 +202,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default BuyerSignUp;

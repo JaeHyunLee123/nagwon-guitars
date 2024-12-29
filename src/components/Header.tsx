@@ -16,9 +16,14 @@ const Header = () => {
       {isLoggedIn ? (
         <Button>마이 페이지</Button>
       ) : (
-        <Link href={"/sign-up/buyer"}>
-          <Button>회원가입</Button>
-        </Link>
+        <div className="flex space-x-2">
+          <Link href={"/log-in"}>
+            <Button variant={"outline"}>로그인</Button>
+          </Link>
+          <Link href={"/sign-up/buyer"}>
+            <Button>회원가입</Button>
+          </Link>
+        </div>
       )}
     </header>
   );

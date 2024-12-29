@@ -11,9 +11,13 @@ import {
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const signupFormSchema = z
   .object({
@@ -34,9 +38,36 @@ const SignUp = () => {
     mode: "onChange",
   });
 
-  const onSubmit = (values: z.infer<typeof signupFormSchema>) => {
-    console.log(values);
+  const onSubmit = (form: z.infer<typeof signupFormSchema>) => {
+    mutate(form);
   };
+
+  const route = useRouter();
+
+  const { toast } = useToast();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: ({
+      email,
+      password,
+      name,
+      phoneNumber,
+    }: z.infer<typeof signupFormSchema>) => {
+      return axios.post("/sign-up/buyer", {
+        email,
+        password,
+        name,
+        phoneNumber,
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "계정을 생성했습니다.",
+        variant: "success",
+      });
+      route.push("/log-in");
+    },
+  });
 
   return (
     <main>
@@ -127,7 +158,9 @@ const SignUp = () => {
               </FormItem>
             )}
           />
-          <Button type="submit">회원가입</Button>
+          <Button type="submit" disabled={isPending}>
+            회원가입
+          </Button>
         </form>
       </Form>
     </main>

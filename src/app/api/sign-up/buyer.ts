@@ -10,7 +10,6 @@ interface ResponseData {
 const BodyValidator = z.object({
   email: z.string().email(),
   password: z.string().min(10),
-  passwordConfirmation: z.string(),
   name: z.string().min(2),
   phoneNumber: z.string().regex(/^[\d]+$/),
 });

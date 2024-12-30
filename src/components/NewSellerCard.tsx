@@ -15,11 +15,11 @@ import axios from "axios";
 export default function NewSellerCard(newSellor: User) {
   const fetchStore = async () => {
     const response = await axios.get("/api/store", {
-      params: { sellorId: newSellor.id },
+      params: { sellerId: newSellor.id },
     });
     return response.data;
   };
-  const { data: store } = useQuery<Store>({
+  const { data: store, isPending } = useQuery<Store>({
     queryKey: ["store", `${newSellor.id}`],
     queryFn: fetchStore,
   });
@@ -31,9 +31,19 @@ export default function NewSellerCard(newSellor: User) {
       </CardHeader>
 
       <CardContent className="flex flex-col space-y-2">
-        <span>{`매장 이름:`}</span>
-        <span>{`매장 번호: `}</span>
-        <span>{`매장 위치:`}</span>
+        {isPending ? (
+          <div>매장 정보 로딩중</div>
+        ) : (
+          <>
+            <span>{`매장 이름: ${store?.storeName}`}</span>
+            <span>{`매장 번호: ${store?.storePhoneNumber}`}</span>
+            <span>{`매장 위치:${store?.address}`}</span>
+            <span>{`매장 url: ${
+              store?.webSite ? store.webSite : "없음"
+            }`}</span>
+          </>
+        )}
+
         <span>{`등록일자: ${newSellor.createdAt.getMonth()}월 ${newSellor.createdAt.getDate()}일`}</span>
       </CardContent>
       <CardFooter>

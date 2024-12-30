@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { getIronSession, SessionOptions } from "iron-session";
 import type { Role } from "@prisma/client";
 
-interface SessionData {
+export interface SessionData {
   email?: string;
   userId?: string;
   role?: Role;

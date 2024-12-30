@@ -12,7 +12,7 @@ import { Button } from "./ui/Button";
 
 export default function NewSellerCard(newSellor: User) {
   return (
-    <Card className="p-2 w-[40rem]">
+    <Card className="p-2 w-[90%] max-w-[25rem]">
       <CardHeader>
         <CardTitle>{`${newSellor.name}님`}</CardTitle>
       </CardHeader>

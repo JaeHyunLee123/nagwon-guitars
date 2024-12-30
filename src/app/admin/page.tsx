@@ -26,7 +26,7 @@ export default async function Admin() {
         {newSellers.length === 0 ? (
           <span>승인 대기 중인 판매자가 없습니다</span>
         ) : (
-          <div>
+          <div className="flex flex-col space-y-4">
             {newSellers.map((newSeller) => (
               <NewSellerCard key={newSeller.id} {...newSeller} />
             ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import { User } from "@prisma/client";
+import { Store, User } from "@prisma/client";
 import {
   Card,
   CardContent,
@@ -9,8 +9,21 @@ import {
   CardTitle,
 } from "./ui/Card";
 import { Button } from "./ui/Button";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export default function NewSellerCard(newSellor: User) {
+  const fetchStore = async () => {
+    const response = await axios.get("/api/store", {
+      params: { sellorId: newSellor.id },
+    });
+    return response.data;
+  };
+  const { data: store } = useQuery<Store>({
+    queryKey: ["store", `${newSellor.id}`],
+    queryFn: fetchStore,
+  });
+
   return (
     <Card className="p-2 w-[90%] max-w-[25rem]">
       <CardHeader>

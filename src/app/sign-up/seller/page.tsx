@@ -10,8 +10,13 @@ import {
   FormMessage,
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
+import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import axios, { AxiosError } from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -40,8 +45,62 @@ const SellorSignUp = () => {
     mode: "onChange",
   });
 
+  const route = useRouter();
+
+  const { toast } = useToast();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (form: z.infer<typeof signupFormSchema>) => {
+      return axios.post("/api/sign-up/sellor", form);
+    },
+    onSuccess: () => {
+      toast({
+        title: "계정을 생성했습니다.",
+        variant: "success",
+      });
+      route.push("/log-in");
+    },
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        //invalid form
+        if (error.response?.status === 422) {
+          toast({
+            title: "유효하지 않은 입력입니다.",
+            description: "양식에 맞게 입력해주시길 바랍니다.",
+            variant: "destructive",
+          });
+          //이미 사용중인 이메일
+        } else if (error.response?.status === 409) {
+          toast({
+            title: "이미 사용중인 이메일입니다.",
+            description: "다른 이메일을 제출해주세요.",
+            variant: "destructive",
+          });
+        } else if (error.response?.status === 500) {
+          toast({
+            title: "예상치 못한 서버 에러입니다.",
+            description: "잠시 후 다시 요청해주세요.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "알 수 없는 에러가 발생했습니다.",
+            description: "잠시 후 다시 요청해주세요.",
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "알 수 없는 에러가 발생했습니다.",
+          description: "잠시 후 다시 요청해주세요.",
+          variant: "destructive",
+        });
+      }
+    },
+  });
+
   const onSubmit = (form: z.infer<typeof signupFormSchema>) => {
-    console.log(form);
+    mutate(form);
   };
 
   return (
@@ -170,7 +229,7 @@ const SellorSignUp = () => {
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={false}>
+          <Button type="submit" disabled={isPending}>
             회원가입
           </Button>
         </form>

@@ -33,6 +33,7 @@ const signupFormSchema = z
       .url("올바른 웹사이트 주소를 입력해주세요.")
       .optional(),
     storeAddress: z.string(),
+    storeName: z.string(),
   })
   .refine((data) => data.password === data.passwordConfirmation, {
     message: "비밀번호가 서로 같지 않습니다.",
@@ -185,6 +186,19 @@ const SellorSignUp = () => {
                 <FormLabel>핸드폰 번호</FormLabel>
                 <FormControl>
                   <Input {...field} type={"tel"} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={signUpForm.control}
+            name="storeName"
+            render={({ field }) => (
+              <FormItem className="w-[90%]">
+                <FormLabel>가게 이름</FormLabel>
+                <FormControl>
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -16,6 +16,7 @@ const BodyValidator = z.object({
     .url("올바른 웹사이트 주소를 입력해주세요.")
     .optional(),
   storeAddress: z.string(),
+  storeName: z.string(),
 });
 
 export async function POST(req: NextRequest) {
@@ -31,6 +32,7 @@ export async function POST(req: NextRequest) {
       storeAddress,
       storePhoneNumber,
       storeWebsite,
+      storeName,
     } = BodyValidator.parse(body);
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -52,6 +54,7 @@ export async function POST(req: NextRequest) {
         webSite: storeWebsite,
         storePhoneNumber,
         address: storeAddress,
+        storeName,
       },
     });
 

@@ -5,12 +5,16 @@ import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 
 const BodyValidator = z.object({
-  email: z.string().email(),
-  password: z.string().min(10),
-  name: z.string().min(2),
-  phoneNumber: z.string().regex(/^[\d]+$/),
+  email: z.string().email("이메일 포맷에 맞게 작성해주세요."),
+  password: z.string().min(10, "비밀번호는 최소 10글자 이상이여야 합니다."),
+  passwordConfirmation: z.string(),
+  name: z.string().min(2, "이름은 최소 2글자 이상이여야 합니다."),
+  userPhoneNumber: z.string().regex(/^[\d]+$/, "숫자만 입력해주세요"),
   storePhoneNumber: z.string().regex(/^[\d]+$/, "숫자만 입력해주세요"),
-  storeWebsite: z.string().optional(),
+  storeWebsite: z
+    .string()
+    .url("올바른 웹사이트 주소를 입력해주세요.")
+    .optional(),
   storeAddress: z.string(),
 });
 
@@ -18,11 +22,12 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
+    console.log(body);
     const {
       email,
       password,
       name,
-      phoneNumber,
+      userPhoneNumber,
       storeAddress,
       storePhoneNumber,
       storeWebsite,
@@ -35,7 +40,7 @@ export async function POST(req: NextRequest) {
         email,
         password: hashedPassword,
         name,
-        userPhoneNumber: phoneNumber,
+        userPhoneNumber,
         isApproved: false,
         role: "Seller",
       },

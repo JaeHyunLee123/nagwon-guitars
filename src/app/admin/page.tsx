@@ -19,7 +19,7 @@ export default async function Admin() {
 
   return (
     <div className="p-2">
-      <div>
+      <div className="flex flex-col">
         <span className="text-2xl font-bold">
           승인 대기 중인 신규 판매자 목록
         </span>

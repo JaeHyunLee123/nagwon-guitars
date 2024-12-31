@@ -40,6 +40,13 @@ export default function NewSellerCard(newSeller: User) {
       });
       route.refresh();
     },
+    onError: () => {
+      toast({
+        title: "알 수 없는 에러가 발생했습니다.",
+        description: "잠시 후 다시 요청해주세요.",
+        variant: "destructive",
+      });
+    },
   });
 
   return (

@@ -1,15 +1,25 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
 
-const BodyValidator = z.object({});
+const BodyValidator = z.object({
+  sellerId: z.string(),
+});
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const {} = BodyValidator.parse(body);
+    const { sellerId } = BodyValidator.parse(body);
+
+    await db.user.update({
+      where: {
+        id: sellerId,
+      },
+      data: {
+        isApproved: true,
+      },
+    });
 
     return Response.json({ message: "ok" }, { status: 200 });
   } catch (error) {

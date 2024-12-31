@@ -11,6 +11,8 @@ import {
 import { Button } from "./ui/Button";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 export default function NewSellerCard(newSeller: User) {
   const fetchStore = async () => {
@@ -19,9 +21,25 @@ export default function NewSellerCard(newSeller: User) {
     });
     return response.data;
   };
+
   const { data: store, isPending } = useQuery<Store>({
     queryKey: ["store", `${newSeller.id}`],
     queryFn: fetchStore,
+  });
+
+  const { toast } = useToast();
+  const route = useRouter();
+  const { mutate, isPending: isApproving } = useMutation({
+    mutationFn: (sellerId: string) => {
+      return axios.post("/api/seller/approve", { sellerId });
+    },
+    onSuccess: () => {
+      toast({
+        title: `${newSeller.name}님을 승인했습니다`,
+        variant: "success",
+      });
+      route.refresh();
+    },
   });
 
   return (
@@ -47,7 +65,14 @@ export default function NewSellerCard(newSeller: User) {
         <span>{`등록일자: ${newSeller.createdAt.getMonth()}월 ${newSeller.createdAt.getDate()}일`}</span>
       </CardContent>
       <CardFooter>
-        <Button>등록 승인</Button>
+        <Button
+          disabled={isApproving}
+          onClick={() => {
+            mutate(newSeller.id);
+          }}
+        >
+          등록 승인
+        </Button>
       </CardFooter>
     </Card>
   );

@@ -40,7 +40,7 @@ const signupFormSchema = z
     path: ["passwordConfirmation"], // Error will be associated with passwordConfirmation
   });
 
-const SellorSignUp = () => {
+const SellerSignUp = () => {
   const signUpForm = useForm<z.infer<typeof signupFormSchema>>({
     resolver: zodResolver(signupFormSchema),
     mode: "onChange",
@@ -52,7 +52,7 @@ const SellorSignUp = () => {
 
   const { mutate, isPending } = useMutation({
     mutationFn: (form: z.infer<typeof signupFormSchema>) => {
-      return axios.post("/api/sign-up/sellor", form);
+      return axios.post("/api/sign-up/seller", form);
     },
     onSuccess: () => {
       toast({
@@ -252,4 +252,4 @@ const SellorSignUp = () => {
   );
 };
 
-export default SellorSignUp;
+export default SellerSignUp;

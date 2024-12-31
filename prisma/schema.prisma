@@ -31,7 +31,7 @@ model User {
   role            Role
   userPhoneNumber String
 
-  isApproved Boolean //sellor needs to be approved by admin
+  isApproved Boolean //seller needs to be approved by admin
   store      Store? //only for seller
 }
 

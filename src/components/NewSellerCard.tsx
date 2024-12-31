@@ -9,25 +9,25 @@ import {
   CardTitle,
 } from "./ui/Card";
 import { Button } from "./ui/Button";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export default function NewSellerCard(newSellor: User) {
+export default function NewSellerCard(newSeller: User) {
   const fetchStore = async () => {
     const response = await axios.get("/api/store", {
-      params: { sellerId: newSellor.id },
+      params: { sellerId: newSeller.id },
     });
     return response.data;
   };
   const { data: store, isPending } = useQuery<Store>({
-    queryKey: ["store", `${newSellor.id}`],
+    queryKey: ["store", `${newSeller.id}`],
     queryFn: fetchStore,
   });
 
   return (
     <Card className="p-2 w-[90%] max-w-[25rem]">
       <CardHeader>
-        <CardTitle>{`${newSellor.name}님`}</CardTitle>
+        <CardTitle>{`${newSeller.name}님`}</CardTitle>
       </CardHeader>
 
       <CardContent className="flex flex-col space-y-2">
@@ -44,7 +44,7 @@ export default function NewSellerCard(newSellor: User) {
           </>
         )}
 
-        <span>{`등록일자: ${newSellor.createdAt.getMonth()}월 ${newSellor.createdAt.getDate()}일`}</span>
+        <span>{`등록일자: ${newSeller.createdAt.getMonth()}월 ${newSeller.createdAt.getDate()}일`}</span>
       </CardContent>
       <CardFooter>
         <Button>등록 승인</Button>

@@ -67,6 +67,8 @@ model Instrument {
   isUsed                 Boolean  @default(false)
   specificationImageUrls String[]
   specificationTexts     String[]
+  brand                  String
+  name                   String
 
   type   InstrumentType //discriminator
   guitar Guitar? // model specific 1-1 relation

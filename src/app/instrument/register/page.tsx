@@ -1,9 +1,20 @@
 "use client";
 
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/Form";
+import { Input } from "@/components/ui/Input";
 import { useSession } from "@/hooks/useSession";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { InstrumentType } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const imageFileValidator = z.string().refine(
@@ -30,6 +41,11 @@ const instrumentRegisterFormSchema = z.object({
 export default function InstrumentRegister() {
   const { data: session, isPending } = useSession();
 
+  const registerForm = useForm<z.infer<typeof instrumentRegisterFormSchema>>({
+    resolver: zodResolver(instrumentRegisterFormSchema),
+    mode: "onChange",
+  });
+
   const router = useRouter();
 
   useEffect(() => {
@@ -44,7 +60,27 @@ export default function InstrumentRegister() {
     <main>
       <span className="font-bold text-2xl">악기 등록</span>
       {session?.isApproved ? (
-        <div></div>
+        <Form {...registerForm}>
+          <form>
+            <FormField
+              control={registerForm.control}
+              name="instrumentImages"
+              render={({ field }) => (
+                <FormItem className="w-[90%]">
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="example@example.com"
+                      type={"email"}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
       ) : (
         <span>아직 승인 대기 중입니다.</span>
       )}

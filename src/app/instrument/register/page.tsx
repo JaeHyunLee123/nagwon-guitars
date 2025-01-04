@@ -22,7 +22,7 @@ import {
 import { Textarea } from "@/components/ui/Textarea";
 import { useSession } from "@/hooks/useSession";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BassFeature, GuitarFeature, InstrumentType } from "@prisma/client";
+import { InstrumentType } from "@prisma/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -50,8 +50,6 @@ const instrumentRegisterFormSchema = z.object({
   specificationImage: z.string(imageFileValidator).optional(),
   specificationText: z.string().array().optional(),
   instrumentType: z.nativeEnum(InstrumentType),
-  bassFeature: z.array(z.nativeEnum(BassFeature)).optional(),
-  guitarFeature: z.array(z.nativeEnum(GuitarFeature)).optional(),
 });
 
 export default function InstrumentRegister() {
@@ -86,8 +84,6 @@ export default function InstrumentRegister() {
     const file = event.target.files[0];
     setInstrumentPreview(URL.createObjectURL(file));
   };
-
-  const instrumentType = registerForm.watch("instrumentType");
 
   return (
     <main className="p-2 flex flex-col items-center">
@@ -161,7 +157,6 @@ export default function InstrumentRegister() {
                       <Input
                         {...field}
                         type="number"
-                        defaultValue={1}
                         className="rounded-r-none"
                       />
                       <span
@@ -184,7 +179,11 @@ export default function InstrumentRegister() {
                 <FormItem className="w-[90%]">
                   <FormLabel>신품 / 중고</FormLabel>
                   <FormControl>
-                    <RadioGroup className="flex flex-row" {...field}>
+                    <RadioGroup
+                      className="flex flex-row"
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value={"new"} id="new" />
                         <Label>신품</Label>
@@ -272,11 +271,14 @@ export default function InstrumentRegister() {
                 <FormItem className="w-[90%]">
                   <FormLabel>악기 종류</FormLabel>
                   <FormControl>
-                    <Select>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="악기 종류" />
                       </SelectTrigger>
-                      <SelectContent {...field}>
+                      <SelectContent>
                         <SelectItem value="Guitar">기타</SelectItem>
                         <SelectItem value="Bass">베이스</SelectItem>
                       </SelectContent>
@@ -286,8 +288,6 @@ export default function InstrumentRegister() {
                 </FormItem>
               )}
             />
-            {instrumentType === "Guitar" ? <div>기타</div> : ""}
-            {instrumentType === "Bass" ? <div>베이스</div> : ""}
             <Button type="submit">등록</Button>
           </form>
         </Form>

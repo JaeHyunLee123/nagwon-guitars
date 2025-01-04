@@ -82,7 +82,40 @@ export default function InstrumentRegister() {
     if (!event.target.files) return;
 
     const file = event.target.files[0];
-    setInstrumentPreview(URL.createObjectURL(file));
+
+    if (file.size > 60_000_000) {
+      registerForm.setError("instrumentImage", {
+        message: "5mb보다 작은 이미지를 입력해주세요.",
+      });
+      return;
+    }
+
+    const imageUrl = URL.createObjectURL(file);
+
+    setInstrumentPreview(imageUrl);
+
+    registerForm.setValue("instrumentImage", imageUrl);
+  };
+
+  const onSpecificationImageChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (!event.target.files) return;
+
+    const file = event.target.files[0];
+
+    if (file.size > 60_000_000) {
+      registerForm.setError("specificationImage", {
+        message: "5mb보다 작은 이미지를 입력해주세요.",
+      });
+      return;
+    }
+
+    const imageUrl = URL.createObjectURL(file);
+
+    setInstrumentPreview(imageUrl);
+
+    registerForm.setValue("specificationImage", imageUrl);
   };
 
   return (
@@ -201,7 +234,7 @@ export default function InstrumentRegister() {
             <FormField
               control={registerForm.control}
               name="instrumentImage"
-              render={({ field }) => (
+              render={() => (
                 <FormItem className="w-[90%]">
                   <FormLabel className="flex flex-col">
                     <span>악기 사진</span>
@@ -219,7 +252,6 @@ export default function InstrumentRegister() {
                         ""
                       )}
                       <Input
-                        {...field}
                         type="file"
                         accept="image/*"
                         alt="악기 사진"
@@ -234,17 +266,17 @@ export default function InstrumentRegister() {
             <FormField
               control={registerForm.control}
               name="specificationImage"
-              render={({ field }) => (
+              render={() => (
                 <FormItem className="w-[90%]">
                   <FormLabel className="flex flex-col">
                     <span>악기 설명 사진 (옵션)</span>
                   </FormLabel>
                   <FormControl>
                     <Input
-                      {...field}
                       type="file"
                       accept="image/*"
                       alt="상세 사진"
+                      onChange={onSpecificationImageChange}
                     />
                   </FormControl>
                   <FormMessage />

@@ -61,61 +61,17 @@ model Instrument {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  imageUrls              String[]
-  price                  Int
-  stock                  Int      @default(1)
-  isUsed                 Boolean  @default(false)
-  specificationImageUrls String[]
-  specificationTexts     String[]
-  brand                  String
-  name                   String
+  imageUrl              String
+  price                 Int
+  stock                 Int     @default(1)
+  isUsed                Boolean @default(false)
+  specificationImageUrl String?
+  specificationText     String?
+  brand                 String
+  name                  String
 
-  type   InstrumentType //discriminator
-  guitar Guitar? // model specific 1-1 relation
-  bass   Bass? // model specific 1-1 relation
+  type InstrumentType
 
   store   Store  @relation(fields: [storeId], references: [id])
   storeId String
-}
-
-enum GuitarFeature {
-  Acoustic
-  Electric
-  Classic
-
-  SixString
-  SevenStringOrMore
-}
-
-//extends Instrument
-model Guitar {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  instrument   Instrument @relation(fields: [instrumentId], references: [id])
-  instrumentId String     @unique
-
-  features GuitarFeature[]
-}
-
-enum BassFeature {
-  Acoustic
-  Electric
-
-  FourString
-  FiveString
-  SixStringOrMore
-}
-
-//extends Instrument
-model Bass {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  instrument   Instrument @relation(fields: [instrumentId], references: [id])
-  instrumentId String     @unique
-
-  features BassFeature[]
 }

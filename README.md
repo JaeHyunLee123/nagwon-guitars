@@ -5,6 +5,16 @@
 위와 같은 불편함을 해소하기 위해 낙원 상가 악기 정보 플랫폼을 만든다.
 우선적으로 기타와 베이스 정보만 만들고 이후 확장한다.
 
+## .env
+
+```
+DATABASE_URL=
+DIRECT_URL=
+SESSION_PASSWORD=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+```
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

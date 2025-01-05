@@ -23,31 +23,36 @@ import { Textarea } from "@/components/ui/Textarea";
 import { useSession } from "@/hooks/useSession";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InstrumentType } from "@prisma/client";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const imageFileValidator = z.string().refine(
-  (value) => {
-    const validExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp"];
-    return validExtensions.some((ext) => value.toLowerCase().endsWith(ext));
-  },
-  {
-    message:
-      "File must be an image with a valid extension (.jpg, .jpeg, .png, .gif, .bmp).",
-  }
-);
+const imageFileValidator = z.object({
+  name: z.string(),
+  size: z.number().max(60_000_000, "5mb보다 작은 이미지를 입력해주세요."),
+  type: z.string().refine((value) => {
+    const validExtensions = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/bmp",
+    ];
+    return validExtensions.includes(value);
+  }, "File must be an image with a valid extension (.jpg, .jpeg, .png, .gif, .bmp)."),
+});
 
-const instrumentRegisterFormSchema = z.object({
+export const instrumentRegisterFormSchema = z.object({
   brand: z.string(),
   name: z.string(),
   price: z.string().regex(/^[\d]+$/, "숫자만 입력해주세요"),
   stock: z.string().regex(/^[\d]+$/, "숫자만 입력해주세요"),
   isUsed: z.enum(["new", "used"]),
-  instrumentImage: z.string(imageFileValidator),
-  specificationImage: z.string(imageFileValidator).optional(),
+  instrumentImage: imageFileValidator,
+  specificationImage: imageFileValidator.optional(),
   specificationText: z.string().array().optional(),
   instrumentType: z.nativeEnum(InstrumentType),
 });
@@ -70,8 +75,15 @@ export default function InstrumentRegister() {
     mode: "onChange",
   });
 
+  const { mutate } = useMutation({
+    mutationFn: (form: z.infer<typeof instrumentRegisterFormSchema>) => {
+      return axios.post("/api/instrument/register", form);
+    },
+  });
+
   const onSubmit = (form: z.infer<typeof instrumentRegisterFormSchema>) => {
     console.log(form);
+    mutate(form);
   };
 
   const [instrumentPreview, setInstrumentPreview] = useState("");
@@ -94,7 +106,7 @@ export default function InstrumentRegister() {
 
     setInstrumentPreview(imageUrl);
 
-    registerForm.setValue("instrumentImage", imageUrl);
+    registerForm.setValue("instrumentImage", file);
   };
 
   const onSpecificationImageChange = (
@@ -110,12 +122,6 @@ export default function InstrumentRegister() {
       });
       return;
     }
-
-    const imageUrl = URL.createObjectURL(file);
-
-    setInstrumentPreview(imageUrl);
-
-    registerForm.setValue("specificationImage", imageUrl);
   };
 
   return (
@@ -234,7 +240,7 @@ export default function InstrumentRegister() {
             <FormField
               control={registerForm.control}
               name="instrumentImage"
-              render={() => (
+              render={(field) => (
                 <FormItem className="w-[90%]">
                   <FormLabel className="flex flex-col">
                     <span>악기 사진</span>
@@ -256,6 +262,7 @@ export default function InstrumentRegister() {
                         accept="image/*"
                         alt="악기 사진"
                         onChange={onInstrumentImageChange}
+                        {...field}
                       />
                     </div>
                   </FormControl>
@@ -266,7 +273,7 @@ export default function InstrumentRegister() {
             <FormField
               control={registerForm.control}
               name="specificationImage"
-              render={() => (
+              render={(field) => (
                 <FormItem className="w-[90%]">
                   <FormLabel className="flex flex-col">
                     <span>악기 설명 사진 (옵션)</span>
@@ -277,6 +284,7 @@ export default function InstrumentRegister() {
                       accept="image/*"
                       alt="상세 사진"
                       onChange={onSpecificationImageChange}
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />

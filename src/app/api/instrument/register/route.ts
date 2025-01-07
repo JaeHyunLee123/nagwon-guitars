@@ -1,10 +1,20 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { InstrumentType, Prisma } from "@prisma/client";
 import { db } from "@/lib/db";
-import { instrumentRegisterFormSchema } from "@/app/instrument/register/page";
+import getIronSessionData from "@/lib/session";
+import { InstrumentType } from "@prisma/client";
 
-const BodyValidator = instrumentRegisterFormSchema;
+const BodyValidator = z.object({
+  brand: z.string(),
+  name: z.string(),
+  price: z.string().regex(/^[\d]+$/, "숫자만 입력해주세요"),
+  stock: z.string().regex(/^[\d]+$/, "숫자만 입력해주세요"),
+  isUsed: z.enum(["new", "used"]),
+  instrumentImage: z.string(),
+  specificationImage: z.string().optional(),
+  specificationText: z.string().optional(),
+  instrumentType: z.nativeEnum(InstrumentType),
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,10 +22,31 @@ export async function POST(req: NextRequest) {
 
     console.log(body);
 
-    const {} = BodyValidator.parse(body);
+    const instrumentInfo = BodyValidator.parse(body);
+
+    const session = await getIronSessionData();
+
+    if (session.role !== "Seller" || !session.isApproved) {
+      return Response.json({ message: "unauthorized" }, { status: 401 });
+    }
+
+    const seller = await db.user.findUnique({
+      where: {
+        id: session.userId,
+      },
+      include: {
+        store: true,
+      },
+    });
+
+    if (!seller || !seller.store) {
+      return Response.json({ message: "unauthorized" }, { status: 401 });
+    }
 
     return Response.json({ message: "ok" }, { status: 200 });
   } catch (error) {
+    console.error(error);
+
     if (error instanceof z.ZodError) {
       return Response.json({ message: "invalid form" }, { status: 422 });
     }

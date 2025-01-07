@@ -30,20 +30,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-const imageFileValidator = z.object({
-  name: z.string(),
-  size: z.number().max(60_000_000, "5mb보다 작은 이미지를 입력해주세요."),
-  type: z.string().refine((value) => {
-    const validExtensions = [
-      "image/jpeg",
-      "image/png",
-      "image/gif",
-      "image/bmp",
-    ];
-    return validExtensions.includes(value);
-  }, "File must be an image with a valid extension (.jpg, .jpeg, .png, .gif, .bmp)."),
-});
+import { supabase } from "@/lib/supabase";
 
 export const instrumentRegisterFormSchema = z.object({
   brand: z.string(),
@@ -51,9 +38,9 @@ export const instrumentRegisterFormSchema = z.object({
   price: z.string().regex(/^[\d]+$/, "숫자만 입력해주세요"),
   stock: z.string().regex(/^[\d]+$/, "숫자만 입력해주세요"),
   isUsed: z.enum(["new", "used"]),
-  instrumentImage: imageFileValidator,
-  specificationImage: imageFileValidator.optional(),
-  specificationText: z.string().array().optional(),
+  instrumentImage: z.instanceof(File),
+  specificationImage: z.instanceof(File).optional(),
+  specificationText: z.string().optional(),
   instrumentType: z.nativeEnum(InstrumentType),
 });
 
@@ -81,7 +68,29 @@ export default function InstrumentRegister() {
     },
   });
 
-  const onSubmit = (form: z.infer<typeof instrumentRegisterFormSchema>) => {
+  const onSubmit = async (
+    form: z.infer<typeof instrumentRegisterFormSchema>
+  ) => {
+    const instrumentImageName = `instrument-${
+      session?.userId
+    }-${Date.now()}-image.${form.instrumentImage.name.split(".").pop()}`;
+
+    const specificationImageName = `instrument-${
+      session?.userId
+    }-${Date.now()}-specification.${form.specificationImage?.name
+      .split(".")
+      .pop()}`;
+
+    await supabase.storage
+      .from("instrument-image")
+      .upload(instrumentImageName, form.instrumentImage);
+
+    if (form.specificationImage) {
+      await supabase.storage
+        .from("instrument-specification")
+        .upload(specificationImageName, form.specificationImage);
+    }
+
     console.log(form);
     mutate(form);
   };
@@ -101,6 +110,16 @@ export default function InstrumentRegister() {
       });
       return;
     }
+
+    //check if the file is an image
+    if (!file.type.startsWith("image")) {
+      registerForm.setError("instrumentImage", {
+        message: "이미지 파일을 입력해주세요.",
+      });
+      return;
+    }
+
+    console.log(file);
 
     const imageUrl = URL.createObjectURL(file);
 
@@ -122,6 +141,16 @@ export default function InstrumentRegister() {
       });
       return;
     }
+
+    //check if the file is an image
+    if (!file.type.startsWith("image")) {
+      registerForm.setError("instrumentImage", {
+        message: "이미지 파일을 입력해주세요.",
+      });
+      return;
+    }
+
+    registerForm.setValue("specificationImage", file);
   };
 
   return (
@@ -328,7 +357,12 @@ export default function InstrumentRegister() {
                 </FormItem>
               )}
             />
-            <Button type="submit">등록</Button>
+            <Button
+              type="submit"
+              disabled={registerForm.formState.isSubmitting}
+            >
+              등록
+            </Button>
           </form>
         </Form>
       ) : (

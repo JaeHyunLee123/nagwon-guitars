@@ -67,7 +67,7 @@ export default function InstrumentRegister() {
   const { toast } = useToast();
   const { mutate } = useMutation({
     mutationFn: (data: z.infer<typeof instrumentRegisterFormSchema>) => {
-      return axios.post("/api/instrument/register", data);
+      return axios.post("/api/instrument", data);
     },
     onSuccess: () => {
       toast({

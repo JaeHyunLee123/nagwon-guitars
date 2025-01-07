@@ -31,6 +31,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { supabase } from "@/lib/supabase";
+import { convertBlobUrlToFile } from "@/lib/utils";
 
 export const instrumentRegisterFormSchema = z.object({
   brand: z.string(),
@@ -38,8 +39,8 @@ export const instrumentRegisterFormSchema = z.object({
   price: z.string().regex(/^[\d]+$/, "숫자만 입력해주세요"),
   stock: z.string().regex(/^[\d]+$/, "숫자만 입력해주세요"),
   isUsed: z.enum(["new", "used"]),
-  instrumentImage: z.instanceof(File),
-  specificationImage: z.instanceof(File).optional(),
+  instrumentImage: z.string(),
+  specificationImage: z.string().optional(),
   specificationText: z.string().optional(),
   instrumentType: z.nativeEnum(InstrumentType),
 });
@@ -63,35 +64,44 @@ export default function InstrumentRegister() {
   });
 
   const { mutate } = useMutation({
-    mutationFn: (form: z.infer<typeof instrumentRegisterFormSchema>) => {
-      return axios.post("/api/instrument/register", form);
+    mutationFn: (data: z.infer<typeof instrumentRegisterFormSchema>) => {
+      return axios.post("/api/instrument/register", data);
     },
   });
 
   const onSubmit = async (
     form: z.infer<typeof instrumentRegisterFormSchema>
   ) => {
+    const instrumentImage = await convertBlobUrlToFile(form.instrumentImage);
+    const specificationImage = form.specificationImage
+      ? await convertBlobUrlToFile(form.specificationImage)
+      : null;
+
     const instrumentImageName = `instrument-${
       session?.userId
-    }-${Date.now()}-image.${form.instrumentImage.name.split(".").pop()}`;
+    }-${Date.now()}-image.${instrumentImage.name.split(".").pop()}`;
 
-    const specificationImageName = `instrument-${
-      session?.userId
-    }-${Date.now()}-specification.${form.specificationImage?.name
-      .split(".")
-      .pop()}`;
+    const specificationImageName = specificationImage
+      ? `instrument-${
+          session?.userId
+        }-${Date.now()}-specification.${specificationImage.name
+          .split(".")
+          .pop()}`
+      : undefined;
 
     await supabase.storage
       .from("instrument-image")
-      .upload(instrumentImageName, form.instrumentImage);
+      .upload(instrumentImageName, instrumentImage);
 
-    if (form.specificationImage) {
+    if (specificationImage && specificationImageName) {
       await supabase.storage
         .from("instrument-specification")
-        .upload(specificationImageName, form.specificationImage);
+        .upload(specificationImageName, specificationImage);
     }
 
-    console.log(form);
+    form.instrumentImage = instrumentImageName;
+    form.specificationImage = specificationImageName;
+
     mutate(form);
   };
 
@@ -125,7 +135,7 @@ export default function InstrumentRegister() {
 
     setInstrumentPreview(imageUrl);
 
-    registerForm.setValue("instrumentImage", file);
+    registerForm.setValue("instrumentImage", imageUrl);
   };
 
   const onSpecificationImageChange = (
@@ -150,7 +160,9 @@ export default function InstrumentRegister() {
       return;
     }
 
-    registerForm.setValue("specificationImage", file);
+    const imageUrl = URL.createObjectURL(file);
+
+    registerForm.setValue("specificationImage", imageUrl);
   };
 
   return (

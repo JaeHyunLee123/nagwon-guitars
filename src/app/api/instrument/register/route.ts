@@ -43,6 +43,21 @@ export async function POST(req: NextRequest) {
       return Response.json({ message: "unauthorized" }, { status: 401 });
     }
 
+    await db.instrument.create({
+      data: {
+        brand: instrumentInfo.brand,
+        name: instrumentInfo.name,
+        price: parseInt(instrumentInfo.price),
+        stock: parseInt(instrumentInfo.stock),
+        isUsed: instrumentInfo.isUsed === "new" ? false : true,
+        instrumentImage: instrumentInfo.instrumentImage,
+        specificationImage: instrumentInfo.specificationImage,
+        specificationText: instrumentInfo.specificationText,
+        type: instrumentInfo.instrumentType,
+        storeId: seller.store.id,
+      },
+    });
+
     return Response.json({ message: "ok" }, { status: 200 });
   } catch (error) {
     console.error(error);

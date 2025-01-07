@@ -61,14 +61,14 @@ model Instrument {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  imageUrl              String
-  price                 Int
-  stock                 Int     @default(1)
-  isUsed                Boolean @default(false)
-  specificationImageUrl String?
-  specificationText     String?
-  brand                 String
-  name                  String
+  instrumentImage    String
+  price              Int
+  stock              Int     @default(1)
+  isUsed             Boolean @default(false)
+  specificationImage String?
+  specificationText  String?
+  brand              String
+  name               String
 
   type InstrumentType
 

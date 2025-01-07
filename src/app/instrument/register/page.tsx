@@ -32,6 +32,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { supabase } from "@/lib/supabase";
 import { convertBlobUrlToFile } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 export const instrumentRegisterFormSchema = z.object({
   brand: z.string(),
@@ -63,9 +64,17 @@ export default function InstrumentRegister() {
     mode: "onChange",
   });
 
+  const { toast } = useToast();
   const { mutate } = useMutation({
     mutationFn: (data: z.infer<typeof instrumentRegisterFormSchema>) => {
       return axios.post("/api/instrument/register", data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "악기 등록 성공",
+        description: `등록 악기: ${registerForm.getValues("name")}`,
+        variant: "success",
+      });
     },
   });
 

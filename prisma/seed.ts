@@ -1,4 +1,4 @@
-import { PrismaClient, Store } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 const db = new PrismaClient();
 
 const sellerNames = ["김철수", "이영희", "오해원", "신짱구", "릴리"];

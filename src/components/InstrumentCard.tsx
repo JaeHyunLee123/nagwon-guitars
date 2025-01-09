@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/Card";
+import { Card, CardContent, CardTitle } from "@/components/ui/Card";
 import { Instrument, Store } from "@prisma/client";
 import { supabase } from "@/lib/supabase";
 import Image from "next/image";
@@ -24,13 +24,15 @@ export default function InstrumentCard({
   return (
     <Card className="p-4">
       <CardContent className="flex flex-col mt-5 space-y-2">
-        {/*TODO: solve image error! */}
+        <CardTitle>
+          <span>{`${instrument.name}`}</span>
+        </CardTitle>
         <Image
           src={getImageUrl(instrument.instrumentImage)}
-          className="border border-1 w-20 h-20"
+          className="border border-1 "
           alt={"instrument-image"}
-          width={80}
-          height={80}
+          width={100}
+          height={100}
         />
 
         <span>{`${instrument.brand}`}</span>

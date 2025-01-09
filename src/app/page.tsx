@@ -8,8 +8,8 @@ export default async function Home() {
   });
 
   return (
-    <main className="flex justify-center align-middle">
-      <div className="flex flex-wrap space-x-2 space-y-2 m-2 w-full">
+    <main className="flex justify-center itmem-center">
+      <div className="grid gap-2 place-items-center m-2 w-full max-w-[1300px] p-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {instruments ? (
           instruments.map((instrument) => (
             <InstrumentCard

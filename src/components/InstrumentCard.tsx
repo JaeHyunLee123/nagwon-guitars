@@ -22,18 +22,20 @@ export default function InstrumentCard({
   };
 
   return (
-    <Card className="p-4">
-      <CardContent className="flex flex-col mt-5 space-y-2">
+    <Card className="p-4 w-[16rem] h-[30rem]">
+      <CardContent className="flex flex-col space-y-2">
         <CardTitle>
           <span>{`${instrument.name}`}</span>
         </CardTitle>
-        <Image
-          src={getImageUrl(instrument.instrumentImage)}
-          className="border border-1 "
-          alt={"instrument-image"}
-          width={100}
-          height={100}
-        />
+        <div className="relative w-40 h-40">
+          <Image
+            src={getImageUrl(instrument.instrumentImage)}
+            className="border border-1 "
+            alt={"instrument-image"}
+            fill={true}
+            objectFit="contain"
+          />
+        </div>
 
         <span>{`${instrument.brand}`}</span>
         <span>{`${instrument.name}`}</span>

@@ -16,9 +16,7 @@ export default function InstrumentCard({
   const getImageUrl = (instrumentImage: string) => {
     const result = supabase.storage
       .from("instrument-image")
-      .getPublicUrl(instrumentImage, {
-        transform: { width: 100, height: 100 },
-      });
+      .getPublicUrl(instrumentImage);
 
     return result.data.publicUrl;
   };

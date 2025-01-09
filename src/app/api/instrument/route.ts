@@ -4,6 +4,38 @@ import { db } from "@/lib/db";
 import getIronSessionData from "@/lib/session";
 import { InstrumentType } from "@prisma/client";
 
+export async function GET(req: NextRequest) {
+  try {
+    console.log("hi");
+    const params = req.nextUrl.searchParams;
+    const page = parseInt(params.get("page") || "0");
+
+    console.log(page);
+
+    const instruments = await db.instrument.findMany({
+      include: {
+        store: true,
+      },
+      skip: page * 5,
+      take: 5,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return Response.json(instruments, { status: 200 });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return Response.json({ message: "invalid form" }, { status: 422 });
+    }
+
+    return Response.json(
+      { message: "unexpected server error" },
+      { status: 500 }
+    );
+  }
+}
+
 const BodyValidator = z.object({
   brand: z.string(),
   name: z.string(),

@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { supabase } from "./supabase";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -15,3 +16,11 @@ export async function convertBlobUrlToFile(blobUrl: string) {
   });
   return file;
 }
+
+export const getImageUrl = (instrumentImage: string) => {
+  const result = supabase.storage
+    .from("instrument-image")
+    .getPublicUrl(instrumentImage);
+
+  return result.data.publicUrl;
+};

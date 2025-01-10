@@ -6,7 +6,6 @@ import { InstrumentType } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
   try {
-    console.log("hi");
     const params = req.nextUrl.searchParams;
     const page = parseInt(params.get("page") || "0");
 
@@ -19,7 +18,7 @@ export async function GET(req: NextRequest) {
       skip: page * 5,
       take: 5,
       orderBy: {
-        createdAt: "desc",
+        updatedAt: "desc",
       },
     });
 

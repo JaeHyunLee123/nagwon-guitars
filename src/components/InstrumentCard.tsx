@@ -39,9 +39,11 @@ export default function InstrumentCard({
         <span>{`재고: ${instrument.stock}`}</span>
         <span>{instrument.isUsed ? "중고" : "신품"}</span>
 
-        <Link href={`/instrument/${instrument.id}`}>
-          <Button variant={"outline"}>상세보기</Button>
-        </Link>
+        <div className="flex space-x-2 items-center">
+          <Link href={`/instrument/${instrument.id}`}>
+            <Button variant={"outline"}>상세보기</Button>
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );

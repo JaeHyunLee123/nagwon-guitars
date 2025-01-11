@@ -31,6 +31,8 @@ model User {
   role            Role
   userPhoneNumber String
 
+  likes Instrument[] @relation("UserLikesInstrument")
+
   isApproved Boolean //seller needs to be approved by admin
   store      Store? //only for seller
 }
@@ -71,6 +73,8 @@ model Instrument {
   name               String
 
   type InstrumentType
+
+  liked User[] @relation("UserLikesInstrument")
 
   store   Store  @relation(fields: [storeId], references: [id])
   storeId String

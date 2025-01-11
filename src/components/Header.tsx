@@ -18,12 +18,12 @@ const Header = () => {
   return (
     <header className="flex justify-between py-4 px-2 border-b">
       <Link href={"/"}>
-        <span className="font-bold text-2xl">낙원기타</span>
+        <span className="font-bold text-lg md:text-2xl">낙원기타</span>
       </Link>
 
       {session?.isLoggedIn ? (
         <div className="flex space-x-2 items-center">
-          <span>{`안녕하세요, ${session.username}님`}</span>
+          <span className="hidden md:block">{`안녕하세요, ${session.username}님`}</span>
           <Button
             variant={"outline"}
             onClick={() => {
@@ -32,7 +32,9 @@ const Header = () => {
           >
             로그아웃
           </Button>
-          <Button>마이 페이지</Button>
+          <Link href={`/my-page/${session.userId}`}>
+            <Button>마이 페이지</Button>
+          </Link>
         </div>
       ) : (
         <div className="flex space-x-2">

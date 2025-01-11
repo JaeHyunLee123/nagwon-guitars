@@ -5,10 +5,6 @@ import bcrypt from "bcrypt";
 
 export async function GET(req: NextRequest) {
   try {
-    return Response.json({ message: "ok" }, { status: 200 });
-  } catch (error) {
-    console.error(error);
-
     const params = req.nextUrl.searchParams;
     const password = params.get("password");
 
@@ -44,7 +40,18 @@ export async function GET(req: NextRequest) {
 
     const isPasswordSame = await bcrypt.compare(password, user.password);
 
-    return Response.json({ isPasswordSame }, { status: 200 });
+    if (!isPasswordSame) {
+      return Response.json(
+        {
+          message: "password not same",
+        },
+        { status: 403 }
+      );
+    }
+
+    return Response.json({ message: "ok" }, { status: 200 });
+  } catch (error) {
+    console.error(error);
 
     return Response.json(
       { message: "unexpected server error" },

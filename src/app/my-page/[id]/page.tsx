@@ -35,7 +35,7 @@ export default async function MyPage({
             <span>{`이름: ${user.name}`}</span>
             <span>{`이메일: ${user.email}`}</span>
             <span>{`전화번호: ${user.userPhoneNumber}`}</span>
-            <PasswordDialog />
+            <PasswordDialog session={session} />
           </CardContent>
         </Card>
       ) : (

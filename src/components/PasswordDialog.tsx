@@ -15,15 +15,20 @@ import {
   FormMessage,
 } from "./ui/Form";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import type { SessionData } from "@/lib/session";
 
 const formSchema = z.object({
   password: z.string().min(10, "비밀번호는 최소 10글자 이상이여야 합니다."),
 });
 
-export default function PasswordDialog() {
+interface PasswordDialogProps {
+  session: SessionData;
+}
+
+export default function PasswordDialog({ session }: PasswordDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
@@ -40,6 +45,39 @@ export default function PasswordDialog() {
         title: "비밀번호가 확인되었습니다.",
         variant: "success",
       });
+
+      route.push(`/my-page/${session.userId}/edit`);
+    },
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 400) {
+          toast({
+            title: "비밀번호를 전송해주세요.",
+            variant: "destructive",
+          });
+        } else if (error.response?.status === 401) {
+          toast({
+            title: "로그인 후 시도해주세요.",
+            variant: "destructive",
+          });
+        } else if (error.response?.status === 404) {
+          toast({
+            title: "올바르지 않은 계정입니다.",
+            variant: "destructive",
+          });
+        } else if (error.response?.status === 403) {
+          toast({
+            title: "비밀번호가 올바르지 않습니다.",
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "알 수 없는 서버 에러가 발생했습니다.",
+          description: "잠시 후 다시 시도해주세요.",
+          variant: "destructive",
+        });
+      }
     },
   });
 

@@ -1,6 +1,5 @@
 import { db } from "@/lib/db";
 import getIronSessionData from "@/lib/session";
-import { NextRequest } from "next/server";
 
 export async function GET() {
   try {

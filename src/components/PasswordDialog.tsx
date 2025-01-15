@@ -18,20 +18,17 @@ import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
-import type { SessionData } from "@/lib/session";
 
 const formSchema = z.object({
   password: z.string().min(10, "비밀번호는 최소 10글자 이상이여야 합니다."),
 });
 
 interface PasswordDialogProps {
-  session: SessionData;
   redirect: string;
   triggerText: string;
 }
 
 export default function PasswordDialog({
-  session,
   redirect,
   triggerText,
 }: PasswordDialogProps) {

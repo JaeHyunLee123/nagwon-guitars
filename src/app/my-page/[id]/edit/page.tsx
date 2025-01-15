@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/Input";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "@prisma/client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -46,7 +46,6 @@ export default function EditUser({
       setUserId(id);
     };
     fetchId();
-    console.log(userId);
   }, [params, userId]);
 
   //2. get user data
@@ -88,12 +87,31 @@ export default function EditUser({
   }, [isFetched, user, userInfoForm]);
 
   //4. update user data - have to make api
-  //5. go back to my-page
+  const { mutate, isPending } = useMutation({
+    mutationFn: (form: z.infer<typeof userInfoFormSchema>) => {
+      return axios.post("/api/user", form);
+    },
+    onSuccess: () => {
+      toast({
+        title: "정보를 업데이트 했습니다.",
+        variant: "success",
+      });
+      router.push(`/my-page/${userId}`);
+    },
+  });
+
+  const onSubmit = (form: z.infer<typeof userInfoFormSchema>) => {
+    mutate(form);
+  };
+
   return (
     <main className="flex flex-col space-y-4 items-center">
       <span className="text-xl font-bold mt-4">회원 정보 수정</span>
       <Form {...userInfoForm}>
-        <form className="flex flex-col justify-center items-center space-y-2 w-[90%] max-w-[25rem] border border-1 rounded-md m-4 p-4">
+        <form
+          onSubmit={userInfoForm.handleSubmit(onSubmit)}
+          className="flex flex-col justify-center items-center space-y-2 w-[90%] max-w-[25rem] border border-1 rounded-md m-4 p-4"
+        >
           <FormField
             control={userInfoForm.control}
             name="email"
@@ -106,6 +124,19 @@ export default function EditUser({
                     type={"email"}
                     {...field}
                   />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={userInfoForm.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem className="w-[90%]">
+                <FormLabel>비밀번호</FormLabel>
+                <FormControl>
+                  <Input type={"password"} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -150,7 +181,7 @@ export default function EditUser({
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={false}>
+          <Button type="submit" disabled={isPending}>
             회원 정보 수정
           </Button>
         </form>

@@ -56,7 +56,6 @@ export default async function MyPage({
               <span>{`이메일: ${user.email}`}</span>
               <span>{`전화번호: ${user.userPhoneNumber}`}</span>
               <PasswordDialog
-                session={session}
                 redirect={`/my-page/${user.id}/edit`}
                 triggerText="회원 정보 수정"
               />
@@ -79,7 +78,6 @@ export default async function MyPage({
                 store.webSite || "등록된 웹사이트가 없습니다"
               }`}</span>
               <PasswordDialog
-                session={session}
                 redirect={`/my-page/${user.id}/edit`}
                 triggerText="매장 정보 수정"
               />
@@ -89,6 +87,7 @@ export default async function MyPage({
           ""
         )}
       </div>
+
       <div className="grid gap-2 place-items-center m-2 w-full max-w-[1300px] p-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {instruments && store
           ? instruments.map((instrument) => (

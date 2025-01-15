@@ -26,9 +26,15 @@ const formSchema = z.object({
 
 interface PasswordDialogProps {
   session: SessionData;
+  redirect: string;
+  triggerText: string;
 }
 
-export default function PasswordDialog({ session }: PasswordDialogProps) {
+export default function PasswordDialog({
+  session,
+  redirect,
+  triggerText,
+}: PasswordDialogProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
@@ -46,7 +52,7 @@ export default function PasswordDialog({ session }: PasswordDialogProps) {
         variant: "success",
       });
 
-      route.push(`/my-page/${session.userId}/edit`);
+      route.push(redirect);
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
@@ -88,7 +94,7 @@ export default function PasswordDialog({ session }: PasswordDialogProps) {
   return (
     <Dialog>
       <DialogTrigger>
-        <Button>회원 정보 수정</Button>
+        <Button>{triggerText}</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>

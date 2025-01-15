@@ -16,7 +16,7 @@ export default function InstrumentCard({
   instrument,
 }: InstrumentCardProps) {
   return (
-    <Card className="p-4 w-[16rem] h-[30rem]">
+    <Card className="p-4 w-[18rem] h-[30rem]">
       <CardContent className="flex flex-col space-y-2">
         <CardTitle>
           <span>{`${instrument.name}`}</span>

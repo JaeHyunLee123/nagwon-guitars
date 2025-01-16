@@ -56,8 +56,6 @@ export async function POST(req: NextRequest) {
       return Response.json({ message: "log in first" }, { status: 401 });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const user = await db.user.findUnique({
       where: {
         id: session.userId,
@@ -71,6 +69,10 @@ export async function POST(req: NextRequest) {
       return Response.json({ message: "no user info" }, { status: 404 });
     }
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(body);
+    console.log(user);
+
     await db.user.update({
       where: {
         id: user.id,
@@ -83,10 +85,14 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    console.log("hi");
+    //TODO: solve 'TypeError: The "payload" argument must be of type object. Received null' error
+
     return Response.json({ message: "ok" }, { status: 200 });
   } catch (error) {
-    console.error(error);
+    if (error instanceof Error) {
+      console.error(error.stack);
+    }
+
     if (error instanceof z.ZodError) {
       return Response.json({ message: "invalid form" }, { status: 422 });
     }

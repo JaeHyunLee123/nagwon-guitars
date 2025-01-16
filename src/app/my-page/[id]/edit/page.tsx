@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "@prisma/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -97,6 +97,47 @@ export default function EditUser({
         variant: "success",
       });
       router.push(`/my-page/${userId}`);
+    },
+    onError(error) {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 401) {
+          toast({
+            title: "알 수 없는 사용자 입니다.",
+            description: "로그인 후 시도해주세요",
+            variant: "destructive",
+          });
+        } else if (error.response?.status === 404) {
+          toast({
+            title: "유저 정보가 없습니다.",
+            description: "올바른 계정으로 로그인해주세요.",
+            variant: "destructive",
+          });
+        } else if (error.response?.status === 422) {
+          toast({
+            title: "유효하지 않은 폼입니다.",
+            description: "올바른 정보를 입력해주세요",
+            variant: "destructive",
+          });
+        } else if (error.response?.status === 409) {
+          toast({
+            title: "이미 사용 중인 이메일입니다.",
+            description: "다른 이메일을 사용해주세요.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "알 수 없는 서버 에러가 발생했습니다",
+            description: "잠시 후 시도해주세요",
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "알 수 없는 서버 에러가 발생했습니다",
+          description: "잠시 후 시도해주세요",
+          variant: "destructive",
+        });
+      }
     },
   });
 

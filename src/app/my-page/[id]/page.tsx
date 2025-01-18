@@ -87,17 +87,19 @@ export default async function MyPage({
           ""
         )}
       </div>
-
-      <div className="grid gap-2 place-items-center m-2 w-full max-w-[1300px] p-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {instruments && store
-          ? instruments.map((instrument) => (
-              <InstrumentCard
-                key={instrument.id}
-                instrument={instrument}
-                store={store}
-              />
-            ))
-          : ""}
+      <div className="flex flex-col space-y-2 p-2">
+        <h1 className="text-lg font-extrabold">등록 악기</h1>
+        <div className="grid gap-2 place-items-center m-2 w-full max-w-[1300px] p-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {instruments && store
+            ? instruments.map((instrument) => (
+                <InstrumentCard
+                  key={instrument.id}
+                  instrument={instrument}
+                  store={store}
+                />
+              ))
+            : ""}
+        </div>
       </div>
     </div>
   );

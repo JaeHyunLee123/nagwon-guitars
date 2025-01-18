@@ -78,7 +78,7 @@ export default async function MyPage({
                 store.webSite || "등록된 웹사이트가 없습니다"
               }`}</span>
               <PasswordDialog
-                redirect={`/my-page/${user.id}/edit`}
+                redirect={`/my-page/${user.id}/edit/store`}
                 triggerText="매장 정보 수정"
               />
             </CardContent>

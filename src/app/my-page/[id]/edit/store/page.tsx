@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
+import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Store } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
@@ -85,6 +86,7 @@ export default function EditStore({
     console.log(form);
   };
 
+  const { toast } = useToast();
   //4. update - need api
 
   return (

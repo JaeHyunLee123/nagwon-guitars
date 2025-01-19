@@ -13,8 +13,9 @@ import { Input } from "@/components/ui/Input";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Store } from "@prisma/client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -84,10 +85,25 @@ export default function EditStore({
 
   const onSubmit = (form: z.infer<typeof storeInfoSchema>) => {
     console.log(form);
+    mutate(form);
   };
 
   const { toast } = useToast();
+  const router = useRouter();
   //4. update - need api
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (form: z.infer<typeof storeInfoSchema>) => {
+      return axios.post("/api/store", form);
+    },
+    onSuccess: () => {
+      toast({
+        title: "매장 정보를 수정했습니다.",
+        variant: "success",
+      });
+      router.push(`/my-page/${userId}`);
+    },
+  });
 
   return (
     <main className="flex flex-col space-y-4 items-center">
@@ -150,7 +166,7 @@ export default function EditStore({
             )}
           />
 
-          <Button type="submit" disabled={false}>
+          <Button type="submit" disabled={isPending}>
             매장 정보 수정
           </Button>
         </form>

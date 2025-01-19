@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Store } from "@prisma/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -102,6 +102,39 @@ export default function EditStore({
         variant: "success",
       });
       router.push(`/my-page/${userId}`);
+    },
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        if (error.response?.status === 422) {
+          toast({
+            title: "로그인을 먼저 해주세요.",
+            variant: "destructive",
+          });
+        } else if (error.response?.status === 403) {
+          toast({
+            title: "매장 정보를 찾을 수 없습니다.",
+            variant: "destructive",
+          });
+        } else if (error.response?.status === 422) {
+          toast({
+            title: "옳지 않은 폼 제출입니다.",
+            description: "올바른 정보를 입력해주세요.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "알 수 없는 서버 에러입니다.",
+            description: "잠시 후 다시 시도해주세요.",
+            variant: "destructive",
+          });
+        }
+      } else {
+        toast({
+          title: "알 수 없는 서버 에러입니다.",
+          description: "잠시 후 다시 시도해주세요.",
+          variant: "destructive",
+        });
+      }
     },
   });
 

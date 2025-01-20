@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { useToast } from "@/hooks/use-toast";
+import { useSession } from "@/hooks/useSession";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
@@ -34,11 +35,14 @@ const LogIn = () => {
   const route = useRouter();
   const { toast } = useToast();
 
+  const { refetch } = useSession();
+
   const { mutate, isPending } = useMutation({
     mutationFn: ({ email, password }: z.infer<typeof logInFormSchema>) => {
       return axios.get("/api/log-in", { params: { email, password } });
     },
     onSuccess: () => {
+      refetch();
       route.push("/");
     },
     onError: (error) => {

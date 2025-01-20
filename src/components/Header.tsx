@@ -4,14 +4,19 @@ import { useSession } from "@/hooks/useSession";
 import { Button } from "./ui/Button";
 import Link from "next/link";
 import axios from "axios";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const Header = () => {
   const { data: session } = useSession();
 
+  const queryClient = useQueryClient();
+
   const { mutate: logout } = useMutation({
     mutationFn: () => {
       return axios.post("/api/log-out");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["session"] });
     },
   });
 

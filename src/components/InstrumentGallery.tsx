@@ -21,7 +21,11 @@ export default function InstrumentGallery({
   const [currentPage, setCurrentPage] = useState(1);
   const [isAll, setIsAll] = useState(false);
 
-  const { data, refetch, isFetching } = useQuery<InstrumentWithStore[]>({
+  const {
+    data: instrument,
+    refetch,
+    isFetching,
+  } = useQuery<InstrumentWithStore[]>({
     queryKey: ["instruments"],
     queryFn: async () => {
       const res = await axios.get(`/api/instrument`, {
@@ -33,20 +37,20 @@ export default function InstrumentGallery({
   });
 
   useEffect(() => {
-    if (data) {
-      console.log(data);
+    if (instrument) {
+      console.log(instrument);
 
-      if (data.length < 5) {
+      if (instrument.length < 5) {
         setIsAll(true);
       }
 
       if (currentPage === 0) {
-        setInstruments(data);
+        setInstruments(instrument);
       } else {
-        setInstruments((prev) => [...prev, ...data]);
+        setInstruments((prev) => [...prev, ...instrument]);
       }
     }
-  }, [data, currentPage]);
+  }, [instrument, currentPage]);
 
   useEffect(() => {
     console.log("instruments", instruments);

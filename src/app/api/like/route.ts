@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import getIronSessionData from "@/lib/session";
 import { NextRequest } from "next/server";
+import { z } from "zod";
 
 export async function GET(req: NextRequest) {
   try {
@@ -22,7 +23,7 @@ export async function GET(req: NextRequest) {
         id: instrumentId,
       },
       include: {
-        liked: true,
+        likeds: true,
       },
     });
 
@@ -30,8 +31,8 @@ export async function GET(req: NextRequest) {
       return Response.json({ message: "no instrument" }, { status: 404 });
     }
 
-    const isLike = instrument.liked.filter((user) => {
-      return user.id === session.userId;
+    const isLike = instrument.likeds.filter((user) => {
+      return user.userId === session.userId;
     });
 
     if (isLike.length > 0) {
@@ -41,6 +42,66 @@ export async function GET(req: NextRequest) {
     }
   } catch (error) {
     console.error(error);
+
+    return Response.json(
+      { message: "unexpected server error" },
+      { status: 500 }
+    );
+  }
+}
+
+const BodyValidator = z.object({
+  isLike: z.boolean(),
+  instrumentId: z.string(),
+});
+
+export async function POST(req: NextRequest) {
+  try {
+    const session = await getIronSessionData();
+
+    if (!session || !session.isLoggedIn) {
+      return Response.json({ message: "login first" }, { status: 401 });
+    }
+
+    const body = await req.json();
+
+    const { isLike, instrumentId } = BodyValidator.parse(body);
+
+    const instrument = await db.instrument.findUnique({
+      where: {
+        id: instrumentId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!instrument) {
+      return Response.json({ message: "no instrument" }, { status: 404 });
+    }
+
+    const user = await db.user.findUnique({
+      where: {
+        id: session.userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!user) {
+      return Response.json({ message: "no user info" }, { status: 403 });
+    }
+
+    if (isLike) {
+    } else {
+    }
+  } catch (error) {
+    console.error(error);
+
+    if (error instanceof z.ZodError) {
+      return Response.json({ message: "invalid form" }, { status: 422 });
+    }
 
     return Response.json(
       { message: "unexpected server error" },

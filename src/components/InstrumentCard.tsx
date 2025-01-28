@@ -16,7 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/Dialog";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 interface InstrumentCardProps {
@@ -50,7 +50,6 @@ export default function InstrumentCard({
 
   const onLikeClick = () => {
     setIsLike((prev) => !prev);
-    console.log("hi");
   };
 
   return (

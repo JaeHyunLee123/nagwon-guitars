@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/Dialog";
+import { useState } from "react";
 interface InstrumentCardProps {
   store: Store;
   instrument: Instrument;
@@ -26,8 +27,10 @@ export default function InstrumentCard({
   instrument,
 }: InstrumentCardProps) {
   const session = useSession();
+  const [isLike, setIsLike] = useState(false);
 
   const onLikeClick = () => {
+    setIsLike((prev) => !prev);
     console.log("hi");
   };
 
@@ -61,7 +64,7 @@ export default function InstrumentCard({
           </Link>
           {session.data?.isLoggedIn ? (
             <Heart
-              isRed={false}
+              isRed={isLike}
               className="text-red-500 hover:cursor-pointer"
               onClick={onLikeClick}
             />

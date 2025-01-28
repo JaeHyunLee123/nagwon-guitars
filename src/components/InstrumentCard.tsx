@@ -63,6 +63,7 @@ export default function InstrumentCard({
   }, [data]);
 
   const onLikeClick = () => {
+    //optimistic UI
     mutate({ isLike: !isLike, instrumentId: instrument.id });
     setIsLike((prev) => !prev);
   };

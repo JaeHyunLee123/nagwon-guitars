@@ -1,9 +1,11 @@
 import InstrumentCard from "@/components/InstrumentCard";
 import PasswordDialog from "@/components/PasswordDialog";
+import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { db } from "@/lib/db";
 import getIronSessionData from "@/lib/session";
 import { Instrument, Store } from "@prisma/client";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 type storeWithInstrument = Store & { instruments: Instrument[] };
@@ -87,20 +89,27 @@ export default async function MyPage({
           ""
         )}
       </div>
-      <div className="flex flex-col space-y-2 p-2">
-        <h1 className="text-lg font-extrabold">등록 악기</h1>
-        <div className="grid gap-2 place-items-center m-2 w-full max-w-[1300px] p-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {instruments && store
-            ? instruments.map((instrument) => (
-                <InstrumentCard
-                  key={instrument.id}
-                  instrument={instrument}
-                  store={store}
-                />
-              ))
-            : ""}
+      {user?.role === "Seller" ? (
+        <div className="flex flex-col space-y-2 p-2">
+          <h1 className="text-lg font-extrabold">등록 악기</h1>
+          <div className="grid gap-2 place-items-center m-2 w-full max-w-[1300px] p-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {instruments && store && instruments.length > 0
+              ? instruments.map((instrument) => (
+                  <InstrumentCard
+                    key={instrument.id}
+                    instrument={instrument}
+                    store={store}
+                  />
+                ))
+              : "아직 등록한 악기가 없습니다."}
+          </div>
+          <Link href={"/instrument/register"}>
+            <Button>악기 등록하기</Button>
+          </Link>
         </div>
-      </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 }

@@ -17,7 +17,7 @@ import {
   DialogTrigger,
 } from "./ui/Dialog";
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 interface InstrumentCardProps {
   store: Store;
@@ -43,12 +43,27 @@ export default function InstrumentCard({
       return response.data;
     },
   });
+  const { mutate } = useMutation({
+    mutationFn: ({
+      isLike,
+      instrumentId,
+    }: {
+      isLike: boolean;
+      instrumentId: string;
+    }) => {
+      return axios.post("/api/like", { isLike, instrumentId });
+    },
+  });
 
   useEffect(() => {
     console.log(data);
+    if (data) {
+      setIsLike(data.isLike);
+    }
   }, [data]);
 
   const onLikeClick = () => {
+    mutate({ isLike: !isLike, instrumentId: instrument.id });
     setIsLike((prev) => !prev);
   };
 

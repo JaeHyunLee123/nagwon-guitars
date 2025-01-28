@@ -41,7 +41,11 @@ export async function GET(req: NextRequest) {
       return Response.json({ isLike: false }, { status: 200 });
     }
   } catch (error) {
-    console.error(error);
+    if (error instanceof Error) {
+      console.error(error.stack);
+    } else {
+      console.error(error);
+    }
 
     return Response.json(
       { message: "unexpected server error" },
@@ -66,6 +70,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const { isLike, instrumentId } = BodyValidator.parse(body);
+
+    console.log(isLike);
 
     const instrument = await db.instrument.findUnique({
       where: {

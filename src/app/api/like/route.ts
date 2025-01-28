@@ -94,8 +94,22 @@ export async function POST(req: NextRequest) {
     }
 
     if (isLike) {
+      await db.userLikesInstrument.create({
+        data: {
+          userId: user.id,
+          instrumentId: instrument.id,
+        },
+      });
     } else {
+      await db.userLikesInstrument.deleteMany({
+        where: {
+          userId: user.id,
+          instrumentId: instrument.id,
+        },
+      });
     }
+
+    return Response.json({ message: "ok" }, { status: 200 });
   } catch (error) {
     console.error(error);
 

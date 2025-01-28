@@ -16,10 +16,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/Dialog";
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 interface InstrumentCardProps {
   store: Store;
   instrument: Instrument;
+}
+
+interface QueryData {
+  isLike: boolean;
 }
 
 export default function InstrumentCard({
@@ -28,6 +34,19 @@ export default function InstrumentCard({
 }: InstrumentCardProps) {
   const session = useSession();
   const [isLike, setIsLike] = useState(false);
+  const { data } = useQuery<QueryData>({
+    queryKey: ["isLike", session.data?.userId, instrument.id],
+    queryFn: async () => {
+      const response = await axios.get("/api/like", {
+        params: { instrumentId: instrument.id },
+      });
+      return response.data;
+    },
+  });
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   const onLikeClick = () => {
     setIsLike((prev) => !prev);

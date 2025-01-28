@@ -2,7 +2,7 @@ import { db } from "@/lib/db";
 import getIronSessionData from "@/lib/session";
 import { NextRequest } from "next/server";
 
-export async function Get(req: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     const session = await getIronSessionData();
 

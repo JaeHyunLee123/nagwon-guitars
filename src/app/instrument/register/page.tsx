@@ -34,7 +34,7 @@ import { supabase } from "@/lib/supabase";
 import { convertBlobUrlToFile } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
-export const instrumentRegisterFormSchema = z.object({
+const instrumentRegisterFormSchema = z.object({
   brand: z.string(),
   name: z.string(),
   price: z.string().regex(/^[\d]+$/, "숫자만 입력해주세요"),

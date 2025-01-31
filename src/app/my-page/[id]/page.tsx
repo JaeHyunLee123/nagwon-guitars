@@ -43,7 +43,20 @@ export default async function MyPage({
     });
   }
 
-  const instruments = store?.instruments;
+  const sellingInstruments = store?.instruments;
+
+  const likings = await db.userLikesInstrument.findMany({
+    where: { userId: session.userId },
+    include: {
+      instrument: {
+        include: {
+          store: true,
+        },
+      },
+    },
+  });
+
+  const likingInstruments = likings.map((liking) => liking.instrument);
 
   return (
     <div>
@@ -93,8 +106,8 @@ export default async function MyPage({
         <div className="flex flex-col space-y-2 p-2">
           <h1 className="text-lg font-extrabold">등록 악기</h1>
           <div className="grid gap-2 place-items-center m-2 w-full max-w-[1300px] p-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {instruments && store && instruments.length > 0
-              ? instruments.map((instrument) => (
+            {sellingInstruments && store && sellingInstruments.length > 0
+              ? sellingInstruments.map((instrument) => (
                   <InstrumentCard
                     key={instrument.id}
                     instrument={instrument}
@@ -110,6 +123,20 @@ export default async function MyPage({
       ) : (
         ""
       )}
+      <div className="flex flex-col space-y-2 p-2">
+        <h1 className="text-lg font-extrabold">관심 악기</h1>
+        <div className="grid gap-2 place-items-center m-2 w-full max-w-[1300px] p-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {likingInstruments && likingInstruments.length > 0
+            ? likingInstruments.map((likingInstrument) => (
+                <InstrumentCard
+                  key={likingInstrument.id}
+                  instrument={likingInstrument}
+                  store={likingInstrument.store}
+                />
+              ))
+            : "관심 상품이 없습니다."}
+        </div>
+      </div>
     </div>
   );
 }

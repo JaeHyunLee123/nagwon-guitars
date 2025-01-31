@@ -23,7 +23,7 @@ export default async function Admin() {
         <span className="text-2xl font-bold">
           승인 대기 중인 신규 판매자 목록
         </span>
-        {newSellers.length === 0 ? (
+        {!newSellers || newSellers.length === 0 ? (
           <span>승인 대기 중인 판매자가 없습니다</span>
         ) : (
           <div className="flex flex-col space-y-4">

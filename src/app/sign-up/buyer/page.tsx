@@ -19,7 +19,7 @@ import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 
-export const signupFormSchema = z
+const signupFormSchema = z
   .object({
     email: z.string().email("이메일 포맷에 맞게 작성해주세요."),
     password: z.string().min(10, "비밀번호는 최소 10글자 이상이여야 합니다."),
